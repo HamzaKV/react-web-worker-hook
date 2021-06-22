@@ -1,6 +1,6 @@
 {
   "name": "react-web-worker-hooks",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "description": "React Hook for implementing web workers",
   "main": "dist/index.js",
   "repository": "https://github.com/HamzaKV/react-web-worker-hook.git",
@@ -9,7 +9,7 @@
   "scripts": {
     "build": "rollup -c",
     "start": "rollup -c -w",
-    "roll": "yarn build && yarn publish"
+    "roll": "yarn version && yarn build && yarn publish"
   },
   "peerDependencies": {
     "react": ">=16.8.0",
