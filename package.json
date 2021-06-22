@@ -1,6 +1,6 @@
 {
   "name": "react-web-worker-hooks",
-  "version": "0.1.1",
+  "version": "0.1.3",
   "description": "React Hook for implementing web workers",
   "main": "dist/index.js",
   "repository": "https://github.com/HamzaKV/react-web-worker-hook.git",
