@@ -27,7 +27,7 @@ const useWorker = <T>(
 
     const runWorker = (fn?: (e: any) => void) => {
         const blob = new Blob([
-            `onmessage = (e) => { const data = ${fn}(e); postMessage(data); };`,
+            `onmessage = (e) => { const fn = ${fn}; postMessage(fn(e)); };`,
         ]);
         // Obtain a blob URL reference to our worker 'file'.
         const blobURL = window.URL.createObjectURL(blob);
