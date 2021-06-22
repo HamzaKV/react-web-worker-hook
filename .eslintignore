@@ -1,0 +1,9 @@
+node_modules
+dist
+.eslintrc.js
+LICENSE
+README.md
+package.json
+*.json
+*.lock
+*.config.js
