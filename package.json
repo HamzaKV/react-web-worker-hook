@@ -12,7 +12,10 @@
     "patch": "yarn version --patch",
     "minor": "yarn version --minor",
     "major": "yarn version --major",
-    "roll": "yarn build && yarn publish"
+    "roll": "yarn build && yarn publish",
+    "roll:patch": "yarn patch && yarn build && yarn publish",
+    "roll:minor": "yarn minor && yarn build && yarn publish",
+    "roll:major": "yarn major && yarn build && yarn publish"
   },
   "peerDependencies": {
     "react": ">=16.8.0",
