@@ -67,10 +67,3 @@ const useWorker = <T>(
 };
 
 export default useWorker;
-
-/**
- * TODO: 
- * - add dependencies for runWorker to be able to execute based on external changes
- * - add arguments to be provided as reference to fn
- * - modify useWorker to be able to provide fn as reference rather than defined
- */
