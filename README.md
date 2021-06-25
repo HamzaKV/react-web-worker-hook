@@ -127,8 +127,6 @@ export default () => {
 | -------- | ---- | ----------- |
 | `fn(e)`  | `(e: any) => T \| null \| void \| Promise<T \| null \| void>` | Function that needs to be run in parallel. *Provides reference to the web worker event.* |
 
-***IMPORTANT***: function **must** be defined and not be passed as reference.
-
 <br/>
 
 ### Return
