@@ -9,7 +9,10 @@
   "scripts": {
     "build": "rollup -c",
     "start": "rollup -c -w",
-    "roll": "yarn version && yarn build && yarn publish"
+    "patch": "yarn version --patch",
+    "minor": "yarn version --minor",
+    "major": "yarn version --major",
+    "roll": "yarn build && yarn publish"
   },
   "peerDependencies": {
     "react": ">=16.8.0",
