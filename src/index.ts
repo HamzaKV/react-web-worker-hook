@@ -1,19 +1,26 @@
 import { useState, useEffect, useRef } from 'react';
 
+type TWorkerFunctionReturn<T> = T | null | void;
+type TWorkerFunction<T> = (
+    e: any
+) => TWorkerFunctionReturn<T> | Promise<TWorkerFunctionReturn<T>>;
+type TRunWorkerFunction<T> = (fn: TWorkerFunction<T>) => void;
+type TState<T> = {
+    status: 'busy' | 'success' | 'error';
+    data: T | null | undefined;
+    error: Error | null;
+};
+
 const useWorker = <T>(
-    fn?: (e: any) => void
+    fn?: TWorkerFunction<T>
 ): [
-    status: string,
-    data: T | null,
-    error: Error | null,
-    runWorker: () => void
+    status: TState<T>['status'],
+    data: TState<T>['data'],
+    error: TState<T>['error'],
+    runWorker: TRunWorkerFunction<T>
 ] => {
-    const [state, setState] = useState<{
-        status: string;
-        data: T | null;
-        error: Error | null;
-    }>({
-        status: '',
+    const [state, setState] = useState<TState<T>>({
+        status: 'busy',
         data: null,
         error: null,
     });
@@ -25,16 +32,23 @@ const useWorker = <T>(
     const onMsg = (e: any) =>
         setState({ status: 'success', error: null, data: e.data });
 
-    const runWorker = (fn?: (e: any) => void) => {
-        const blob = new Blob([
-            `onmessage = (e) => { const fn = ${fn}; postMessage(fn(e)); };`,
-        ]);
+    const runWorker: TRunWorkerFunction<T> = (fn) => {
+        // eslint-disable-next-line max-len
+        const blob = new Blob([`onmessage = async (e) => { const fn = ${fn}; const data = await fn(e); postMessage(data); };`,]);
         // Obtain a blob URL reference to our worker 'file'.
         const blobURL = window.URL.createObjectURL(blob);
-        worker.current = new Worker(blobURL);
-        worker.current.addEventListener('message', onMsg, false);
-        worker.current.addEventListener('error', onError, false);
-        worker.current.postMessage('');
+        if (window.Worker) {
+            worker.current = new Worker(blobURL);
+            worker.current.addEventListener('message', onMsg, false);
+            worker.current.addEventListener('error', onError, false);
+            worker.current.postMessage('');
+        } else {
+            setState({
+                status: 'error',
+                error: new Error('Web Worker Not supported'),
+                data: null,
+            });
+        }
     };
 
     useEffect(() => {
@@ -53,3 +67,10 @@ const useWorker = <T>(
 };
 
 export default useWorker;
+
+/**
+ * TODO: 
+ * - add dependencies for runWorker to be able to execute based on external changes
+ * - add arguments to be provided as reference to fn
+ * - modify useWorker to be able to provide fn as reference rather than defined
+ */
