@@ -4,7 +4,17 @@ type TWorkerFunctionReturn<T> = T | null | void;
 type TWorkerFunction<T> = (
     e: any
 ) => TWorkerFunctionReturn<T> | Promise<TWorkerFunctionReturn<T>>;
-type TRunWorkerFunction<T> = (fn: TWorkerFunction<T>) => void;
+type TWorkerArgs = {
+    [key: string]:
+        | string
+        | number
+        | TWorkerArgs
+        | Array<string | number | TWorkerArgs>;
+};
+type TRunWorkerFunction<T> = (
+    fn: TWorkerFunction<T>,
+    args?: TWorkerArgs
+) => void;
 type TState<T> = {
     status: 'busy' | 'success' | 'error';
     data: T | null | undefined;
@@ -14,7 +24,8 @@ type TDependency = any[];
 
 const useWorker = <T>(
     fn?: TWorkerFunction<T>,
-    dependencies?: TDependency
+    dependencies?: TDependency,
+    args?: TWorkerArgs
 ): [
     status: TState<T>['status'],
     data: TState<T>['data'],
@@ -34,9 +45,9 @@ const useWorker = <T>(
     const onMsg = (e: any) =>
         setState({ status: 'success', error: null, data: e.data });
 
-    const runWorker: TRunWorkerFunction<T> = (fn) => {
+    const runWorker: TRunWorkerFunction<T> = (fn, args) => {
         // eslint-disable-next-line max-len
-        const blob = new Blob([`onmessage = async (e) => { const fn = ${fn}; const data = await fn(e); postMessage(data); };`,]);
+        const blob = new Blob([`onmessage = async (e) => { const args = ${args}; const fn = ${fn}; const data = await fn(e, args); postMessage(data); };`,]);
         // Obtain a blob URL reference to our worker 'file'.
         const blobURL = window.URL.createObjectURL(blob);
         if (window.Worker) {
@@ -54,11 +65,10 @@ const useWorker = <T>(
     };
 
     useEffect(() => {
-        if (fn) runWorker(fn);
-    }, (dependencies ?? []));
+        if (fn) runWorker(fn, args);
+    }, dependencies ?? []);
 
     useEffect(() => {
-        
         //cleanup
         return () => {
             if (worker.current) {
