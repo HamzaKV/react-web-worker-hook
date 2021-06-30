@@ -10,9 +10,11 @@ type TState<T> = {
     data: T | null | undefined;
     error: Error | null;
 };
+type TDependency = any[];
 
 const useWorker = <T>(
-    fn?: TWorkerFunction<T>
+    fn?: TWorkerFunction<T>,
+    dependencies?: TDependency
 ): [
     status: TState<T>['status'],
     data: TState<T>['data'],
@@ -53,7 +55,11 @@ const useWorker = <T>(
 
     useEffect(() => {
         if (fn) runWorker(fn);
+    }, (dependencies ?? []));
 
+    useEffect(() => {
+        
+        //cleanup
         return () => {
             if (worker.current) {
                 worker.current.removeEventListener('error', onError, false);
