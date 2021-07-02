@@ -30,7 +30,7 @@ const useWorkerPool = <T>(
     workers?: number
 ): [
     state: TState<T>,
-    runWorker: TRunWorkerFunction<T>
+    runWorkerPool: TRunWorkerFunction<T>
 ] => {
     const [state, setState] = useState<TState<T>>([]);
     const workerPool = useRef<TWebWorkerReturn<T>[]>([]);

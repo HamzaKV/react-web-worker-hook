@@ -38,6 +38,7 @@ const useWorkerPoolResult = <T>(
     );
 
     useEffect(() => {
+        let bool = true;
         for (const worker of poolState) {
             if (worker.status === 'error') {
                 setState({
@@ -45,10 +46,11 @@ const useWorkerPoolResult = <T>(
                     error: worker.error,
                     data: [],
                 });
+                bool = false;
                 break;
             }
         }
-        if (poolState.length === workers) {
+        if (poolState.length === workers && bool) {
             setState({
                 status: 'success',
                 error: null,
