@@ -7,3 +7,6 @@ export {
 export {
     default as useWorkerPoolResult
 } from './hooks/web-worker-pool-result';
+export {
+    default as useSharedWorker
+} from './hooks/shared-worker';
