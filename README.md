@@ -21,7 +21,7 @@ or
 | Argument | Type | Description |
 | -------- | ---- | ----------- |
 | `fn(e, args)`  | `(e: any, args: any) => T \| null \| void \| Promise<T \| null \| void>` | Function that needs to be run in parallel. *Provides reference to the web worker event and external args.* |
-| `dependencies`  | `any[] | null | undefined` | Dependencies for hook effect. |
+| `dependencies`  | `any[] \| null \| undefined` | Dependencies for hook effect. |
 | `args`  | `{ ...[key]: value... }` | Object of arguments to be provided to the worker function. |
 
 #### Returns
@@ -40,7 +40,7 @@ or
 | Argument | Type | Description |
 | -------- | ---- | ----------- |
 | `fn(e, args)`  | `(e: any, args: any) => T \| null \| void \| Promise<T \| null \| void>` | Function that needs to be run in parallel. *Provides reference to the web worker event and external args.* |
-| `dependencies`  | `any[] | null | undefined` | Dependencies for hook effect. |
+| `dependencies`  | `any[] \| null \| undefined` | Dependencies for hook effect. |
 | `args`  | `{ ...[key]: value... }` | Object of arguments to be provided to the worker function. |
 | `workers`  | `number` | Number of workers to be spawned. |
 
@@ -58,7 +58,7 @@ or
 | Argument | Type | Description |
 | -------- | ---- | ----------- |
 | `fn(e, args)`  | `(e: any, args: any) => T \| null \| void \| Promise<T \| null \| void>` | Function that needs to be run in parallel. *Provides reference to the web worker event and external args.* |
-| `dependencies`  | `any[] | null | undefined` | Dependencies for hook effect. |
+| `dependencies`  | `any[] \| null \| undefined` | Dependencies for hook effect. |
 | `args`  | `{ ...[key]: value... }` | Object of arguments to be provided to the worker function. |
 | `workers`  | `number` | Number of workers to be spawned. |
 
