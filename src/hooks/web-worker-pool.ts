@@ -77,16 +77,14 @@ const useWorkerPool = <T>(
 
     useEffect(() => {
         if (fn && workers) runWorkerPool(workers, fn, args);
-    }, dependencies ?? []);
-
-    useEffect(() => {
+        
         //cleanup
         return () => {
             for (const worker of workerPool.current) {
                 worker.cleanup();
             }
         };
-    }, []);
+    }, dependencies ?? []);
 
     return [state, runWorkerPool];
 };
