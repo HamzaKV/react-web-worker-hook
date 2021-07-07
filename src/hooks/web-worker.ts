@@ -60,14 +60,12 @@ const useWorker = <T>(
 
     useEffect(() => {
         if (fn) runWorker(fn, args);
-    }, dependencies ?? []);
-
-    useEffect(() => {
+        
         //cleanup
         return () => {
             worker.current?.cleanup();
         };
-    }, []);
+    }, dependencies ?? []);
 
     return [state.status, state.data, state.error, runWorker];
 };
