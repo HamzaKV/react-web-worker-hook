@@ -72,6 +72,25 @@ or
 | `runWorkerPool`  | `Function` | Function to execute worker pool. |
 <br/>
 
+### useSharedWorker
+#### Parameters
+
+| Argument | Type | Description |
+| -------- | ---- | ----------- |
+| `workerName`  | `string` | Name of worker. If defined previously, will subscribe to worker otw instantiate new one. |
+| `sharedObj`  | `{ ...[key]: value... }` | Object to be shared with subscribers of the shared worker. Required when registering a new worker. |
+| `fn(e, sharedObj)`  | `(e: any, sharedObj: any) => any` | Function that will execute when the worker receives a message. Required when registering a new worker.|
+
+#### Returns
+
+| Return | Type | Description |
+| -------- | ---- | ----------- |
+| `status`  | `'idle' \| 'success' \| 'error' \| 'sending' \| 'sent'` | Status of worker thread. |
+| `data`  | `T \| null \| undefined>` | Data returned from worker thread. *T references Generic type for typescript* |
+| `error`  | `Error \| null` | Exception thrown by worker thread. |
+| `dispatch`  | `(message: any) => void` | Function to dispatch a message to the web worker that will execute `fn`. *The message will be propogated to all subscribers except the dispatcher.* |
+<br/>
+
 ## Usage
 
 ### useWorker
@@ -206,6 +225,41 @@ export default () => {
         //expected return value
         return value;
     }, [...dependencies], {...args}, nWorkers);
+
+    ...
+};
+```
+
+### useSharedWorker
+```
+import { useSharedWorker } from 'react-web-worker-hooks';
+
+export default () => {
+    ...
+
+    const [status, data, error, dispatch] = useSharedWorker('websocket', { socket }, (e, sharedObj) => {
+        //code to execute in parallel
+        const { socket, ... } = sharedObj;
+
+        const message = e.data;
+        let value;
+
+        if (message === 'DELETE') {
+            socket = null;
+            value = 'DISCONNECTED';
+        }
+        else ...
+
+        //expected return value
+        return value;
+    });
+
+    useEffect(() => {
+        //running tasks based on return value from worker
+    }, [status, data, error]);
+
+    //some action to be dispatched to the worker
+    const onClick = () => dispatch('DELETE');
 
     ...
 };

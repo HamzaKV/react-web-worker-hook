@@ -4,18 +4,25 @@ import {
     TSharedWebWorkerReturn,
 } from '../services/shared-worker';
 
-const useSharedWorker = (
+//hook return type
+type TState<T> = {
+    status: 'idle' | 'success' | 'error' | 'sending' | 'sent';
+    data: T | null | undefined;
+    error: Error | null;
+};
+
+const useSharedWorker = <T>(
     workerName: string,
     // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
     sharedObj?: any,
     fn?: (e: any, sharedObj: any) => any
 ): [
-    string,
-    any,
-    Error | null,
+    TState<T>['status'],
+    TState<T>['data'],
+    TState<T>['error'],
     TSharedWebWorkerReturn['dispatch']
 ] => {
-    const [state, setState] = useState({
+    const [state, setState] = useState<TState<T>>({
         status: 'idle',
         data: null,
         error: null,
