@@ -1,106 +1,63 @@
 export type TOnMsgFunc = (e?: any) => void;
 export type TOnErrorFunc = (e?: any) => void;
 
-//arguments to be passed to worker function type
-export type TWorkerArgs =
-    | {
-          [key: string]:
-              | string
-              | number
-              | TWorkerArgs
-              | Array<string | number | TWorkerArgs>;
-      }
-    | null
-    | undefined;
-
-//return type of function to be executed within worker
-export type TWorkerFunctionReturn<T> = T | null | void;
-
-//function to be executed within worker type
-export type TWorkerFunction<T> = (
-    e?: any,
-    args?: TWorkerArgs
-) => TWorkerFunctionReturn<T> | Promise<TWorkerFunctionReturn<T>>;
-
-export type TSharedWebWorkerReturn<T> = {
+export type TSharedWebWorkerReturn = {
     create: (
         onMsg: TOnMsgFunc,
         onError: TOnErrorFunc,
-        fn: TWorkerFunction<T>,
-        args?: TWorkerArgs
+        workerName: string,
+        sharedObj?: any,
+        fn?: (e: any, sharedObj: any) => any
     ) => void;
     execute: () => void;
     cleanup: () => void;
+    dispatch: (message: any) => void;
 };
 
-const SharedWebWorker = <T>(
-    onMsg?: TOnMsgFunc,
-    onError?: TOnErrorFunc
-): TSharedWebWorkerReturn<T> => {
+const sharedWorkers = {};
+
+const SharedWebWorker = (): TSharedWebWorkerReturn => {
     let _onMsg: TOnMsgFunc;
     let _onError: TOnErrorFunc;
     let worker: SharedWorker;
 
     const create = (
-        onMsg: TOnMsgFunc, 
-        onError: TOnErrorFunc, 
-        sharedObj: any
+        onMsg: TOnMsgFunc,
+        onError: TOnErrorFunc,
+        workerName: string,
+        sharedObj?: any,
+        fn?: (e: any, sharedObj: any) => any
     ) => {
         _onMsg = onMsg;
         _onError = onError;
 
-        const privateObj = {
-            connections: 0
-        };
+        let url = sharedWorkers[workerName];
 
-        const onconnect = (e: any, privateObj: any, sharedObj: any) => {
-            let { connections } = privateObj;
-            const [port] = e.ports;
-            connections++;
-            port.postMessage('Worker ' + connections + ' connected');
+        if (!!!url) {
+            if (!!sharedObj && !!fn)
+                url = sharedWorkers[workerName] = SWorker(sharedObj, fn);
+            else 
+                // eslint-disable-next-line max-len
+                throw new Error('Trying to create a new worker file however required arguments are missing.');
+        }
 
-            // port.addEventListener(
-            //     'message',
-            //     (eventM: any) => {
-            //         const data = eventM.data;
-            //         port.postMessage(
-            //             'from "clientPort": ' +
-            //                 clientPort.toString() +
-            //                 ', with love :)'
-            //         );
-            //     },
-            //     false
-            // );
-
-            port.start();
-        };
-
-        const blob = new Blob([
-            `const privateObj = ${
-                JSON.stringify(privateObj)
-            }; const sharedObj = ${JSON.stringify(
-                sharedObj
-            )}; onconnect = async (e) => { const fn = ${
-                onconnect
-            }; await fn(e, privateObj, sharedObj); } `,
-        ]);
-
-        const blobURL = window.URL.createObjectURL(blob);
-
-        worker = new SharedWorker(blobURL);
-
+        //spawn worker
+        worker = new SharedWorker(url);
         worker.port.onmessage = _onMsg;
-
-        worker.port.addEventListener('error', _onError,false);
+        worker.port.addEventListener('error', _onError, false);
     };
 
-    // if (onMsg && onError) create(onMsg, onError);
-
     const execute = () => {
+        //start worker
         worker.port.start();
     };
 
+    const dispatch = (message: any ) => {
+        worker.port.postMessage(message);
+    };
+
     const cleanup = () => {
+        //close worker
         worker.port.removeEventListener('message', _onMsg);
         worker.port.removeEventListener('error', _onError);
         worker.port.close();
@@ -110,7 +67,76 @@ const SharedWebWorker = <T>(
         create,
         execute,
         cleanup,
+        dispatch
     };
+};
+
+const SWorker = (
+    sharedObj: any,
+    fn: (e: any, sharedObj: any) => any
+): string => {
+    const privateObj = {
+        connections: 0,
+        peers: [],
+    };
+
+    const onconnect = (
+        e: any,
+        privateObj: any,
+        sharedObj: any,
+        fn: (e: any, sharedObj: any) => any
+    ) => {
+        let { connections } = privateObj;
+        const { peers } = privateObj;
+        const [port] = e.ports;
+
+        connections++;
+        peers.push({
+            connectionId: connections,
+            port: port,
+        });
+
+        port.postMessage({
+            connectionId: connections,
+            type: 'CONNECTION',
+        });
+
+        port.addEventListener(
+            'message',
+            async (eventM: any) => {
+                const data = await fn(eventM, sharedObj);
+
+                peers
+                    .filter((peer: any) => {
+                        return peer.connectionId !== eventM.data.port;
+                    })
+                    .forEach((peer: any) => {
+                        peer.port.postMessage({ 
+                            data, 
+                            sharedObj, 
+                            type: 'UPDATE', 
+                        });
+                    });
+            },
+            false
+        );
+
+        port.start();
+    };
+
+    //instantiate worker
+    const blob = new Blob([
+        `const privateObj = ${JSON.stringify(
+            privateObj
+        )}; const sharedObj = ${JSON.stringify(
+            sharedObj
+        )}; onconnect = (e) => { const fn = ${
+            onconnect
+        }; fn(e, privateObj, sharedObj, ${fn}); } `,
+    ]);
+    const blobURL = window.URL.createObjectURL(blob);
+
+    return blobURL;
 };
 
 export default SharedWebWorker;
