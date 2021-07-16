@@ -1,8 +1,6 @@
 # react-web-worker-hooks
 React Hooks for integrating web workers
 <br/><br/>
-*Experimental*
-<br/><br/>
 
 ### To install:
 

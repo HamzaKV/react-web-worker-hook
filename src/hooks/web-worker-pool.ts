@@ -82,6 +82,7 @@ const useWorkerPool = <T>(
         return () => {
             for (const worker of workerPool.current) {
                 worker.cleanup();
+                workerPool.current.splice(0, 1);
             }
         };
     }, dependencies ?? []);

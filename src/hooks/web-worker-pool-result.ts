@@ -40,7 +40,7 @@ const useWorkerPoolResult = <T>(
     useEffect(() => {
         let bool = true;
         for (const worker of poolState) {
-            if (worker.status === 'error') {
+            if (worker?.status === 'error') {
                 setState({
                     status: 'error',
                     error: worker.error,
@@ -54,7 +54,7 @@ const useWorkerPoolResult = <T>(
             setState({
                 status: 'success',
                 error: null,
-                data: poolState.map((d) => d.data),
+                data: poolState.map((d) => d?.data),
             });
         }
     }, [poolState]);

@@ -64,6 +64,7 @@ const useWorker = <T>(
         //cleanup
         return () => {
             worker.current?.cleanup();
+            worker.current = undefined;
         };
     }, dependencies ?? []);
 
