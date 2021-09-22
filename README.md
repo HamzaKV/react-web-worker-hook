@@ -20,7 +20,7 @@ or
 | -------- | ---- | ----------- |
 | `fn(e, args)`  | `(e: any, args: any) => T \| null \| void \| Promise<T \| null \| void>` | Function that needs to be run in parallel. *Provides reference to the web worker event and external args.* |
 | `dependencies`  | `any[] \| null \| undefined` | Dependencies for hook effect. |
-| `args`  | `{ ...[key]: value... }` | Object of arguments to be provided to the worker function. |
+| `args`  | `{ ...[key]: value... }` | Object of arguments to be provided to the worker function. *Note: args can only be numbers, strings, or an object of numbers/strings*  |
 
 #### Returns
 
@@ -39,7 +39,7 @@ or
 | -------- | ---- | ----------- |
 | `fn(e, args)`  | `(e: any, args: any) => T \| null \| void \| Promise<T \| null \| void>` | Function that needs to be run in parallel. *Provides reference to the web worker event and external args.* |
 | `dependencies`  | `any[] \| null \| undefined` | Dependencies for hook effect. |
-| `args`  | `{ ...[key]: value... }` | Object of arguments to be provided to the worker function. |
+| `args`  | `{ ...[key]: value... }` | Object of arguments to be provided to the worker function. *Note: args can only be numbers, strings, or an object of numbers/strings* |
 | `workers`  | `number` | Number of workers to be spawned. |
 
 #### Returns
@@ -57,7 +57,7 @@ or
 | -------- | ---- | ----------- |
 | `fn(e, args)`  | `(e: any, args: any) => T \| null \| void \| Promise<T \| null \| void>` | Function that needs to be run in parallel. *Provides reference to the web worker event and external args.* |
 | `dependencies`  | `any[] \| null \| undefined` | Dependencies for hook effect. |
-| `args`  | `{ ...[key]: value... }` | Object of arguments to be provided to the worker function. |
+| `args`  | `{ ...[key]: value... }` | Object of arguments to be provided to the worker function. *Note: args can only be numbers, strings, or an object of numbers/strings* |
 | `workers`  | `number` | Number of workers to be spawned. |
 
 #### Returns
@@ -76,7 +76,7 @@ or
 | Argument | Type | Description |
 | -------- | ---- | ----------- |
 | `workerName`  | `string` | Name of worker. If defined previously, will subscribe to worker otw instantiate new one. |
-| `sharedObj`  | `{ ...[key]: value... }` | Object to be shared with subscribers of the shared worker. Required when registering a new worker. |
+| `sharedObj`  | `{ ...[key]: value... }` | Object to be shared with subscribers of the shared worker. Required when registering a new worker. *Note: sharedObj can only be numbers, strings, or an object of numbers/strings* |
 | `fn(e, sharedObj)`  | `(e: any, sharedObj: any) => any` | Function that will execute when the worker receives a message. Required when registering a new worker.|
 
 #### Returns
