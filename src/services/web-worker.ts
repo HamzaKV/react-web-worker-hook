@@ -2,16 +2,16 @@ export type TOnMsgFunc = (e?: any) => void;
 export type TOnErrorFunc = (e?: any) => void;
 
 //arguments to be passed to worker function type
-export type TWorkerArgs =
-    | {
-          [key: string]:
-              | string
-              | number
-              | TWorkerArgs
-              | Array<string | number | TWorkerArgs>;
-      }
-    | null
-    | undefined;
+export type TWorkerArgs = any;
+// | {
+//       [key: string]:
+//           | string
+//           | number
+//           | TWorkerArgs
+//           | Array<string | number | TWorkerArgs>;
+//   }
+// | null
+// | undefined;
 
 //return type of function to be executed within worker
 export type TWorkerFunctionReturn<T> = T | null | void;
@@ -31,6 +31,7 @@ export type TWebWorkerReturn<T> = {
     ) => void;
     execute: () => void;
     cleanup: () => void;
+    fallback: (fn: TWorkerFunction<T>, args?: TWorkerArgs) => Promise<any>;
 };
 
 const WebWorker = <T>(
@@ -55,7 +56,10 @@ const WebWorker = <T>(
 
         const blob = new Blob([
             // eslint-disable-next-line max-len
-            `onmessage = async (e) => { const args = ${args ? JSON.stringify(args) : null}; const fn = ${fn}; const data = await fn(e, args); postMessage(data); };`,
+            `onmessage = async (e) => { const args = ${
+                args ? JSON.stringify(args) : null
+                // eslint-disable-next-line max-len
+            }; const fn = ${fn}; const data = await fn(e, args); postMessage(data); };`,
         ]);
         // Obtain a blob URL reference to our worker 'file'.
         const blobURL = window.URL.createObjectURL(blob);
@@ -80,10 +84,20 @@ const WebWorker = <T>(
         }
     };
 
+    const fallback: TWebWorkerReturn<T>['fallback'] = (fn, args) =>
+        new Promise((resolve, reject) => {
+            try {
+                resolve(fn(args));
+            } catch (err) {
+                reject(err);
+            }
+        });
+
     return {
         create,
         execute,
         cleanup,
+        fallback
     };
 };
 

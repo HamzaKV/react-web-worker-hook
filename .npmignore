@@ -6,3 +6,4 @@ dist
 rollup.config.js
 tsconfig.json
 /src/tmp.ts
+/tests/**/*

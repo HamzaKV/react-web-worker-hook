@@ -3,7 +3,7 @@ import {
     default as Worker,
     TWorkerArgs,
     TWorkerFunction,
-    TWebWorkerReturn
+    TWebWorkerReturn,
 } from '../services/web-worker';
 
 //function to execute worker type
@@ -25,7 +25,8 @@ type TDependency = any[] | null | undefined;
 const useWorker = <T>(
     fn?: TWorkerFunction<T>,
     dependencies?: TDependency,
-    args?: TWorkerArgs
+    args?: TWorkerArgs,
+    fallback = true
 ): [
     status: TState<T>['status'],
     data: TState<T>['data'],
@@ -49,6 +50,11 @@ const useWorker = <T>(
         if (window.Worker) {
             worker.current = Worker(onMsg, onError, fn, args);
             worker.current.execute();
+        } else if (fallback) {
+            Worker()
+                .fallback(fn, args)
+                .then((r) => onMsg({ data: r }))
+                .catch(onError);
         } else {
             setState({
                 status: 'error',
@@ -60,7 +66,7 @@ const useWorker = <T>(
 
     useEffect(() => {
         if (fn) runWorker(fn, args);
-        
+
         //cleanup
         return () => {
             worker.current?.cleanup();
