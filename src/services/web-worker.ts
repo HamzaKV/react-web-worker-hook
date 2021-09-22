@@ -2,16 +2,16 @@ export type TOnMsgFunc = (e?: any) => void;
 export type TOnErrorFunc = (e?: any) => void;
 
 //arguments to be passed to worker function type
-export type TWorkerArgs = any;
-// | {
-//       [key: string]:
-//           | string
-//           | number
-//           | TWorkerArgs
-//           | Array<string | number | TWorkerArgs>;
-//   }
-// | null
-// | undefined;
+export type TWorkerArgs =
+    | {
+          [key: string]:
+              | string
+              | number
+              | TWorkerArgs
+              | Array<string | number | TWorkerArgs>;
+      }
+    | null
+    | undefined;
 
 //return type of function to be executed within worker
 export type TWorkerFunctionReturn<T> = T | null | void;
@@ -97,7 +97,7 @@ const WebWorker = <T>(
         create,
         execute,
         cleanup,
-        fallback
+        fallback,
     };
 };
 
