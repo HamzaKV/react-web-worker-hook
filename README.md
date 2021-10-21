@@ -2,6 +2,14 @@
 React Hooks for integrating web workers
 <br/><br/>
 
+[![NPM Version](https://img.shields.io/npm/v/react-web-worker-hooks.svg)](https://npmjs.org/package/react-web-worker-hooks)
+[![NPM Downloads](https://img.shields.io/npm/dm/react-web-worker-hooks.svg)](https://npmjs.org/package/react-web-worker-hooks)
+[![Commit Activity](https://img.shields.io/github/commit-activity/m/HamzaKV/react-web-worker-hook)](https://npmjs.org/package/react-web-worker-hooks)
+<!-- [![Build](https://img.shields.io/github/workflow/status/HamzaKV/react-web-worker-hook/npm-publish)](https://npmjs.org/package/react-web-worker-hooks) -->
+[![Code Size](https://img.shields.io/github/languages/code-size/HamzaKV/react-web-worker-hook)](https://npmjs.org/package/react-web-worker-hooks)
+![TypeScript](https://img.shields.io/badge/typescript-%23007ACC.svg?style=for-the-badge&logo=typescript&logoColor=white)
+![React](https://img.shields.io/badge/react-%2320232a.svg?style=for-the-badge&logo=react&logoColor=%2361DAFB)
+
 ### To install:
 
 `yarn add react-web-worker-hooks`
